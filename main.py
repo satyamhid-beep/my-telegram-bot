@@ -6,7 +6,7 @@ from google import genai
 # -------------------------------------------------------------
 # यहाँ अपनी Keys डालो (उद्धरण चिन्ह " " के अंदर)
 TELEGRAM_BOT_TOKEN = "8781016869:AAFFU71sEwrx2U3Iv_RB zwffeloaxmmZAR8"
-GEMINI_API_KEY = "AQ.Ab8RN6LNSX5Gv1hjLQc5R4nzL13MPglNqsoTaHqNOgqmzHnvcQ
+GEMINI_API_KEY = "AQ.Ab8RN6LNSX5Gv1hjLQc5R4nzL13MPglNqsoTaHqNOgqmzHnvcQ"
 # -------------------------------------------------------------
 
 # Gemini Client सेटअप
