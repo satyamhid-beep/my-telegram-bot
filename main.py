@@ -5,7 +5,7 @@ from google import genai
 
 # -------------------------------------------------------------
 # यहाँ अपनी Keys डालो (उद्धरण चिन्ह " " के अंदर)
-TELEGRAM_BOT_TOKEN = AAFFU7lsEwrx2U3Iv_RBzwffeloaxmmZAR8
+TELEGRAM_BOT_TOKEN = 8781016869:AAFFU71sEwrx2U3Iv_RB zwffeloaxmmZAR8
 GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
 # -------------------------------------------------------------
 
