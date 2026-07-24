@@ -1,34 +1,25 @@
-
 import os
 import google.generativeai as genai
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
-# --------------------------------------------------
-# आपकी Keys (Token और API Key)
-# --------------------------------------------------
-TELEGRAM_BOT_TOKEN = "8781016869:AAFEMFA61mnmVUtgzWWt37mIEuVuiRGF7OI"
-GEMINI_API_KEY = "AQ.Ab8RN6LNSX5Gv1hjLQc5R4nzL13MPglNqsoTaHqNOgqmzHnvcQ"
-# --------------------------------------------------
+TELEGRAM_BOT_TOKEN = "8651266391:AAFNAiiVuco0hoJZIcmlkvnSN_c880MyF5E"
+GEMINI_API_KEY = "AQ.Ab8RN6Lfe38mohpI_PwvPk6ZFWxYGG5I1Wav5kkY69_uFmPs1w"
 
-# Gemini AI सेटअप
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-# /start कमांड का जवाब
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("नमस्ते! मैं आपका AI असिस्टेंट हूँ। आप मुझसे कोई भी सवाल पूछ सकते हैं!")
+    await update.message.reply_text("Hello! I am your AI Personal Assistant. How can I help you today?")
 
-# यूजर के मैसेज का जवाब (Gemini AI से)
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
     try:
         response = model.generate_content(user_text)
         await update.message.reply_text(response.text)
     except Exception as e:
-        await update.message.reply_text("माफ़ करना, उत्तर देने में कोई समस्या आई है। कृपया थोड़ी देर बाद प्रयास करें।")
+        await update.message.reply_text("Sorry, something went wrong. Please try again later.")
 
-# मुख्य प्रोग्राम
 if __name__ == '__main__':
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     
