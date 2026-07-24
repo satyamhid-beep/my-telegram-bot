@@ -1,4 +1,3 @@
-
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
@@ -42,8 +41,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     user_text = update.message.text
     try:
+        # मॉडल का नाम सही कर दिया गया है
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=user_text,
         )
         await update.message.reply_text(response.text)
