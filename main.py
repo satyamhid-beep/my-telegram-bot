@@ -42,9 +42,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     user_text = update.message.text
     try:
-        # Full Model Path specified to fix NameError / 404
+        # Free Tier Model 1.5 Flash
         response = client.models.generate_content(
-            model='models/gemini-2.0-flash',
+            model='models/gemini-1.5-flash',
             contents=user_text,
         )
         await update.message.reply_text(response.text)
