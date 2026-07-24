@@ -2,7 +2,7 @@
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
-import google.generativeai as genai
+from google import genai
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -20,29 +20,35 @@ def run_dummy_server():
 
 threading.Thread(target=run_dummy_server, daemon=True).start()
 
-# Environment से safe तरीके से API Key लेना
+# Environment Variables
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8651266391:AAFNAiiVuco0hoJZIcmlkvnSN_c880MyF5E")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
+# New Google GenAI Client Setup
+client = None
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
-else:
-    model = None
+    try:
+        client = genai.Client(api_key=GEMINI_API_KEY)
+    except Exception as e:
+        print(f"Client init error: {e}")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Hello! I am your AI Personal Assistant. How can I help you today?")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not model:
-        await update.message.reply_text("API Key configuration error. Please check Render environment variables.")
+    if not client:
+        await update.message.reply_text("API Key configuration error in Render.")
         return
         
     user_text = update.message.text
     try:
-        response = model.generate_content(user_text)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=user_text,
+        )
         await update.message.reply_text(response.text)
     except Exception as e:
+        print(f"Error: {e}")
         await update.message.reply_text("Sorry, something went wrong while connecting to AI.")
 
 if __name__ == '__main__':
