@@ -1,3 +1,4 @@
+
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
@@ -46,7 +47,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=f"{JARVIS_SYSTEM_INSTRUCTION}\nUser: {user_text}",
         )
         await update.message.reply_text(response.text)
@@ -65,7 +66,7 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         file_bytes = await voice_file.download_as_bytearray()
         
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=[
                 JARVIS_SYSTEM_INSTRUCTION,
                 {"mime_type": "audio/ogg", "data": bytes(file_bytes)},
@@ -90,7 +91,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         caption = update.message.caption or "Explain this image in detail for Boss."
         
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=[
                 JARVIS_SYSTEM_INSTRUCTION,
                 {"mime_type": "image/jpeg", "data": bytes(file_bytes)},
