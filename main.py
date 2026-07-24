@@ -1,4 +1,3 @@
-
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
@@ -11,7 +10,7 @@ class DummyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(b"Bot is active!")
+        self.wfile.write(b"Jarvis is Active!")
 
 def run_dummy_server():
     port = int(os.environ.get("PORT", 8080))
@@ -32,9 +31,13 @@ if GEMINI_API_KEY:
     except Exception as e:
         print(f"Client init error: {e}")
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hello! I am your AI Personal Assistant. How can I help you today?")
+# System Prompt for Jarvis Personality
+JARVIS_SYSTEM_INSTRUCTION = "You are Jarvis, an intelligent, polite, and helpful AI assistant created for Satyam. Always refer to the user respectfully as Boss or Sir, and keep your responses smart and natural in Hindi or English."
 
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Hello Boss! I am Jarvis, your Personal AI Assistant. How can I assist you today?")
+
+# Handle Text Messages
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not client:
         await update.message.reply_text("API Key configuration error in Render.")
@@ -42,21 +45,70 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     user_text = update.message.text
     try:
-        # Free Tier Model 1.5 Flash
         response = client.models.generate_content(
-            model='models/gemini-1.5-flash',
-            contents=user_text,
+            model='gemini-2.5-flash',
+            contents=f"{JARVIS_SYSTEM_INSTRUCTION}\nUser: {user_text}",
         )
         await update.message.reply_text(response.text)
     except Exception as e:
         print(f"Error details: {e}")
         await update.message.reply_text(f"Error: {e}")
 
+# Handle Voice Notes / Audio Messages
+async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not client:
+        await update.message.reply_text("API Key configuration error in Render.")
+        return
+
+    try:
+        voice_file = await update.message.voice.get_file()
+        file_bytes = await voice_file.download_as_bytearray()
+        
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=[
+                JARVIS_SYSTEM_INSTRUCTION,
+                {"mime_type": "audio/ogg", "data": bytes(file_bytes)},
+                "Listen to this voice note from Boss, understand what he is asking, and reply accordingly."
+            ]
+        )
+        await update.message.reply_text(response.text)
+    except Exception as e:
+        print(f"Voice processing error: {e}")
+        await update.message.reply_text(f"Sorry Boss, I couldn't process your voice note: {e}")
+
+# Handle Photos
+async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not client:
+        await update.message.reply_text("API Key configuration error in Render.")
+        return
+
+    try:
+        photo_file = await update.message.photo[-1].get_file()
+        file_bytes = await photo_file.download_as_bytearray()
+        
+        caption = update.message.caption or "Explain this image in detail for Boss."
+        
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=[
+                JARVIS_SYSTEM_INSTRUCTION,
+                {"mime_type": "image/jpeg", "data": bytes(file_bytes)},
+                caption
+            ]
+        )
+        await update.message.reply_text(response.text)
+    except Exception as e:
+        print(f"Photo processing error: {e}")
+        await update.message.reply_text(f"Error reading image: {e}")
+
 if __name__ == '__main__':
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
+    app.add_handler(MessageHandler(filters.VOICE, handle_voice))
+    app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     
-    print("Bot is running...")
+    print("Jarvis is running...")
     app.run_polling()
