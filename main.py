@@ -1,3 +1,4 @@
+
 import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
@@ -41,15 +42,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     user_text = update.message.text
     try:
-        # मॉडल का नाम सही कर दिया गया है
+        # Full Model Path specified to fix NameError / 404
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='models/gemini-2.0-flash',
             contents=user_text,
         )
         await update.message.reply_text(response.text)
     except Exception as e:
-        print(f"Error: {e}")
-        await update.message.reply_text("Sorry, something went wrong while connecting to AI.")
+        print(f"Error details: {e}")
+        await update.message.reply_text(f"Error: {e}")
 
 if __name__ == '__main__':
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
